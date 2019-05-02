@@ -177,3 +177,40 @@ class GCN(SegNet):
                         labels=self.y, logits=self.logits, dim=-1)
         loss = tf.multiply(softmax_loss, real)
         return tf.reduce_mean(loss)
+
+    def predict_video(self, sess, dataset, verbose=False, **kwargs):
+        """
+        Make predictions for the given dataset.
+        :param ses: tf.Session.
+        :param dataset: DataSet.
+        :param verbose: bool, whether to print details during prediction.
+        :param kwargs: dict, extra arguments for prediction.
+                -batch_size: int, batch size for each iteraction.
+        :return _y_pred: np.ndarray, shape: shape of self.pred
+        """
+
+        batch_size = kwargs.pop('batch_size', 64)
+
+        num_classes = self.num_classes
+        pred_size = 1
+        num_steps = pred_size // batch_size
+
+        if verbose:
+            print('Running prediction loop...')
+
+        # Start prediction loop
+        _y_pred = []
+        start_time = time.time()
+
+        X=dataset
+        y_pred = sess.run(self.pred, feed_dict={
+                              self.X: X, self.is_train: False})
+        _y_pred.append(y_pred)
+
+        if verbose:
+            print('Total prediction time(sec): {}'.format(
+                time.time() - start_time))
+
+        _y_pred = np.concatenate(_y_pred, axis=0)
+
+        return _y_pred
