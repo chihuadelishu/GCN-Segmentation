@@ -185,7 +185,7 @@ class MomentumOptimizer(Optimizer):
         """
         momentum = kwargs.pop('momentum', 0.9)
         extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        update_vars = tf.train_variables()
+        update_vars = tf.trainable_variables()
         with tf.control_dependencies(extra_update_ops):
             train_op = tf.train.AdamOptimizer(self.learning_rate_placeholder, momentum).\
                         minimize(self.model.loss, var_list=update_vars)
@@ -210,43 +210,6 @@ class MomentumOptimizer(Optimizer):
                 self.curr_learning_rate = new_learning_rate
             self.num_bad_epochs = 0
 
-class MomentumOptimizer(Optimizer):
-    """Gradient descent optimizer, with Momentum algorithm."""
-
-    def _optimize_op(self, **kwargs):
-        """
-        tf.train.MomentumOptimizer.minimize Op for a gradient update.
-        :param kwargs: dict, extra arguments for optimizer.
-                -momentum: float, the momentum coefficent.
-        :return tf.Operation.
-        """
-        momentum = kwargs.pop('momentum', 0.9)
-        extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        update_vars = tf.trainable_variables()
-        with tf.control_dependencies(extra_update_ops):
-            train_op = tf.train.AdamOptimizer(self.learning_rate_placeholder, momentum).minimize(
-                self.model.loss, var_list=update_vars)
-        return train_op
-
-    def _update_learning_rate(self, **kwargs):
-        """
-        Update current learning rate, when evaluation score plateaus.
-        :param kwargs: dict, extra arguments for learning rate scheduling.
-                - learning_rate_patience: int, number of epochs with no improvement after which learning rate will be reduced.
-                - learning_rate_decay: float, factor by which the learning rate will be updated.
-                -eps: float, if the difference between new and old learning rate is smller than eps, the update is ignored.
-        """
-        learning_rate_patience = kwargs.pop('learning_rate_patience', 10)
-        learning_rate_decay = kwargs.pop('learning_rate_decay', 0.1)
-        eps = kwargs.pop('eps', 1e-8)
-
-        if self.num_bad_epochs > learning_rate_patience:
-            new_learning_rate = self.curr_learning_rate * learning_rate_decay
-            # Decay learning rate only when the difference is higher than
-            # epsilon.
-            if self.curr_learning_rate - new_learning_rate > eps:
-                self.curr_learning_rate = new_learning_rate
-            self.num_bad_epochs = 0
 
 
 class AdamOptimizer(Optimizer):

@@ -20,7 +20,12 @@ def read_data(data_dir, image_size, no_label=False):
         im_paths.extend(glob.glob(os.path.join(data_dir, 'images', '*.{}'.format(x))))
     imgs = []
     labels = []
+    count = 0
+
     for im_path in im_paths:
+        count += 1
+        print('read images...', count, ' / ', len(im_paths))
+        
         # image load
         im_name = os.path.splitext(os.path.basename(im_path))[0]
         im = cv2.imread(im_path)

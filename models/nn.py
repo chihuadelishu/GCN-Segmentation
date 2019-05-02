@@ -5,6 +5,7 @@ import numpy as np
 from models.layers import conv_layer, boundary_refine_module, global_conv_module, up_scale, feature_pyramid_attention, global_attention_upsample
 from tensorflow.contrib.slim.nets import resnet_v2 as resnet_v2
 import os
+import glob
 
 slim = tf.contrib.slim
 
@@ -106,6 +107,7 @@ class GCN(SegNet):
         if pretrain:
             frontend_dir = os.path.join(
                 'pretrained_models', '{}.ckpt'.format(frontend))
+            print(frontend_dir)
             with slim.arg_scope(resnet_v2.resnet_arg_scope()):
                 logits, end_points = resnet_v2.resnet_v2_50(
                     self.X, is_training=self.is_train)

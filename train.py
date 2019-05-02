@@ -8,7 +8,7 @@ from learning.optimizers import MomentumOptimizer as Optimizer
 from learning.evaluators import AccuracyEvaluator as Evaluator
 
 """ 1. Load and split datasets """
-root_dir = os.path.join('data/catdog/') # FIXME
+root_dir = os.path.join('../catdog') # FIXME
 trainval_dir = os.path.join(root_dir, 'train')
 
 # Set image size and number of class
